@@ -1,9 +1,15 @@
-TradingView pinescript sends real-time buy and sell alerts to ByBit Tradebot via a webhook
+TradingView pinescript sends real-time buy and sell alerts to ByBit Tradebot via a webhook.
+
 Bybit Tradebot instantly reads and processes the alert to prepare an open or close position
+
 The bot goes through multiple layers of calculations. 
+
 It calculates highest possible leverage with the least potential loss for the maximum gain.
+
 Then it calculates a stop loss just in front of liquidation price using data from the pinechart.
+
 Fail-safes are put in place to avoiding roundripping. 
+
 Once a position is opened or closed, live telegram notifications are sent to the user's mobile for updates.
 
 The TradingView indicator does not lie. These are not handpicked. Indicator and Bybit Bot work hand in hand to generate serious gains.
