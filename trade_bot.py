@@ -30,7 +30,7 @@ class TradeBot:
         self.session = session
         self.balance = get_balance(self.session)
         self.current_positions = get_positions(self.session)
-        self.analyse_position()
+        #self.analyse_position()
 
         self.open_position = False
         self.update_position = False
@@ -82,6 +82,9 @@ class TradeBot:
                 break_even_price, stop_loss, TradeBot.BREAK_EVEN_THRESHOLD)
 
             chronological = lowest_timestamp < highest_timestamp
+
+            if (tp_threshold and break_even_threshold and chronological):
+                print(f"Roundtrip has been detected on {symbol} ")
 
             return tp_threshold and break_even_threshold and chronological
 
@@ -347,6 +350,7 @@ class TradeBot:
                                                 position["side"],
                                                 position["size"],
                                                 position_idx=0), "CLOSE"))
+                            position["roundtripped"] = False
                             print(f"Closed position successfully!\n"
                                   f"Symbol: {position['symbol']}\n"
                                   f"Side: {position['side']}\n"
