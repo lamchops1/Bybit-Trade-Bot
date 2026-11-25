@@ -10,7 +10,7 @@ Bybit Tradebot instantly reads and processes the alert to prepare an open or clo
 
 The bot goes through multiple layers of calculations. 
 
-Firstly calculates highest possible leverage with the least potential loss for maximum gain.
+Firstly calculates the highest possible leverage with the least potential loss for maximum gain.
 
 Then precisely determines a stop loss just in front of liquidation price using data from the pinechart.
 
