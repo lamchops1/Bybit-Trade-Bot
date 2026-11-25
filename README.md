@@ -1,4 +1,5 @@
 TradingView pinescript sends real-time buy and sell alerts to ByBit Tradebot via a webhook.
+
 The indicator does not lie. These screenshots are not handpicked. Indicator and Bybit Bot work hand in hand to generate substantial profit.
 
 <img width="200" height="80" alt="image" src="https://github.com/user-attachments/assets/c56a36d2-fce6-49da-bb55-65353489ce9e" />
