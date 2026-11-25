@@ -187,8 +187,9 @@ class TradeBot:
         for position in self.current_positions:
             if position["symbol"] == trade["symbol"]:
                 position_exists = True
-                self.reverse_position = True
-                break
+                if position["side"] != trade["side"]:
+                    self.reverse_position = True
+                    break
 
         if not position_exists:
             self.open_position = True
