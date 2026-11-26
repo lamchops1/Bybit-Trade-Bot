@@ -58,7 +58,7 @@ def main():
         bot.initialise_manager()
         bot.run()
 
-        while server.is_online or not server.shutdown_requested.is_set():
+        while not server.shutdown_requested.is_set():
             if not server.signal_queue.empty():
                 trade = server.signal_queue.get(timeout=5)
                 bot.receiver(trade)

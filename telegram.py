@@ -10,6 +10,8 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 BASE_URL = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}"
 
+pending_close = {}
+
 shutdown_requested = threading.Event()
 telegram_thread = None
 
@@ -44,10 +46,30 @@ def handle_message(bybit_session, message, chat_id):
         positions = get_live_positions(bybit_session)
         send(f"Your positions:\n\n{positions}", chat_id)
 
+    elif command == "/close":
+        positions = get_live_open_positions(bybit_session)
+        if not positions:
+            pending_close.pop(chat_id, None)
+            send("You have no open positions to close.", chat_id)
+            return
+        pending_close[chat_id] = set(positions)
+        close_message = "Current open positions to close:\n\n"
+
+        for position in positions:
+            close_message += f"Close {position} - with /{position.lower()}\n"
+
+        send(close_message, chat_id)
+
+    elif command.startswith("/") and chat_id in pending_close:
+        symbol = command[1:].upper()
+        close_live_position(bybit_session, symbol)
+        pending_close[chat_id].discard(symbol)
+
     elif command == "/help":
         help_message = ("Available commands:\n\n"
                         "/summary - Get a live account summary\n"
-                        "/positions - Get details of your open positions\n")
+                        "/positions - Get details of your open positions\n"
+                        "/close - Manually close a position")
 
         send(help_message, chat_id)
 
@@ -56,13 +78,20 @@ def handle_message(bybit_session, message, chat_id):
 
 
 def register_commands():
-    commands = [{
-        "command": "summary",
-        "description": "Summary of your account"
-    }, {
-        "command": "positions",
-        "description": "Status of your positions"
-    }]
+    commands = [
+        {
+            "command": "summary",
+            "description": "Summary of your account"
+        },
+        {
+            "command": "positions",
+            "description": "Status of your positions"
+        },
+        {
+            "command": "close",
+            "description": "Manually close a position"
+        },
+    ]
 
     try:
         response = requests.post(f"{BASE_URL}/setMyCommands",

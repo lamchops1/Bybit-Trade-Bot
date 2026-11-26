@@ -19,7 +19,7 @@ class State(Enum):
 
 
 class TradeBot:
-    MAX_POSITIONS = 3
+    MAX_POSITIONS = 4
     INTERVAL = 15  # Only working with 15 minute charts
 
     STOP_LOSS_THRESHOLD = 0.75
@@ -54,7 +54,6 @@ class TradeBot:
         end_time = get_current_time(self.session)
         data = get_past_low_high_prices(self.session, symbol,
                                         TradeBot.INTERVAL, open_time, end_time)
-        print(f"Checking roundtrip for {symbol} ")
 
         self.roundtrip_last_check[symbol] = time.time()
 
@@ -76,11 +75,6 @@ class TradeBot:
 
             chronological = highest_timestamp < lowest_timestamp
 
-            if (tp_threshold and break_even_threshold and chronological):
-                print(f"Roundtrip has been detected on {symbol} ")
-
-            return tp_threshold and break_even_threshold and chronological
-
         elif side == "Sell":
 
             tp_threshold = lowest_price <= take_profit_interpolation(
@@ -91,12 +85,12 @@ class TradeBot:
 
             chronological = lowest_timestamp < highest_timestamp
 
-            if (tp_threshold and break_even_threshold and chronological):
-                print(f"Roundtrip has been detected on {symbol} ")
+        if (tp_threshold and break_even_threshold and chronological):
+            print(f"Roundtrip has been detected on {symbol} ")
 
-            return tp_threshold and break_even_threshold and chronological
+        time.sleep(0.2)
 
-        return False
+        return tp_threshold and break_even_threshold and chronological
 
     def analyse_position(self):
 
@@ -229,7 +223,7 @@ class TradeBot:
 
             if self.finalised_order_ids:
                 order_id, order_status = self.finalised_order_ids[0]
-                if order_status == "CLOSE":
+                if order_status == "CLOSE" or order_status == "ROUNDTRIP CLOSE":
                     closed_orders_ids = confirm_closed_order_id(
                         self.session, order_id)
 
@@ -238,7 +232,7 @@ class TradeBot:
                             (closed_orders_ids, order_status))
                         self.update_position = True
 
-                elif order_status == "OPEN":
+                elif order_status == "OPEN" or order_status == "REVERSAL":
                     opened_orders_ids = confirm_opened_order_id(
                         self.session, order_id)
                     if opened_orders_ids:
@@ -314,7 +308,8 @@ class TradeBot:
                                                    coins,
                                                    stop_loss,
                                                    leverage,
-                                                   position_idx=0), "OPEN"))
+                                                   position_idx=0),
+                                     "REVERSAL"))
                                 print(f"Reversed position successfully!\n"
                                       f"Symbol: {self.trade['symbol']}\n"
                                       f"Side: {self.trade['side']}\n"
@@ -356,7 +351,8 @@ class TradeBot:
                                                 position["symbol"],
                                                 position["side"],
                                                 position["size"],
-                                                position_idx=0), "CLOSE"))
+                                                position_idx=0),
+                                 "ROUNDTRIP CLOSE"))
                             position["roundtripped"] = False
                             print(f"Closed position successfully!\n"
                                   f"Symbol: {position['symbol']}\n"

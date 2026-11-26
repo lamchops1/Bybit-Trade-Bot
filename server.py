@@ -87,7 +87,7 @@ def start_webhook():
                                       daemon=False)
 
     webhook_thread.start()
-    print("Webhook server started")
+    print("\nWebhook server started")
     return webhook_thread
 
 

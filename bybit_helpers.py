@@ -113,7 +113,7 @@ def get_past_low_high_prices(session, symbol, interval, start_time, end_time):
                                      interval=str(interval),
                                      start=start_time,
                                      end=end_time,
-                                     limit=1000)
+                                     limit=300)
         if response["retCode"] != 0:
             raise RuntimeError(response)
 
@@ -368,7 +368,7 @@ def get_execution_overview(session, order_id, order_status, balance, positions,
 
     try:
 
-        if order_status == "CLOSE":
+        if order_status == "CLOSE" or order_status == "ROUNDTRIP CLOSE":
 
             response = session.get_order_history(category="linear",
                                                  orderId=order_id)
@@ -608,3 +608,49 @@ def get_live_positions(session):
         raise RuntimeError(
             f"Failed to retrieve Telegram requested live positions: {e}"
         ) from e
+
+
+def get_live_open_positions(session):
+    try:
+        response = session.get_positions(category="linear", settleCoin="USDT")
+
+        positions = response["result"]["list"]
+
+        return [
+            position["symbol"] for position in positions
+            if float(position["size"]) > 0
+        ]
+
+    except Exception as e:
+        raise RuntimeError(
+            f"Failed to retrieve Telegram requested live positions: {e}"
+        ) from e
+
+
+def close_live_position(session, symbol):
+    try:
+        response = session.get_positions(category="linear", symbol=symbol)
+        if response["retCode"] != 0:
+            return False, response.get("retMsg", "Failed to retrieve position")
+
+        positions = response["result"]["list"]
+
+        open_positions = [p for p in positions if float(p["size"]) > 0]
+
+        for position in open_positions:
+            size = position["size"]
+            side = position["side"]
+            position_idx = int(position["positionIdx"])
+            side = "Sell" if side == "Buy" else "Buy"
+
+            order = session.place_order(category="linear",
+                                        symbol=symbol,
+                                        side=side,
+                                        orderType="Market",
+                                        qty=size,
+                                        positionIdx=position_idx,
+                                        reduceOnly=True)
+
+    except Exception as e:
+        print(f"Close position error: {e}")
+        return False, str(e)
