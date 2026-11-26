@@ -95,9 +95,9 @@ def telegram_server(bybit_session):
             response = requests.get(f"{BASE_URL}/getUpdates",
                                     params={
                                         "offset": offset,
-                                        "timeout": 2
+                                        "timeout": 5
                                     },
-                                    timeout=(3, 5))
+                                    timeout=(3, 8))
 
             response.raise_for_status()
             updates = response.json().get("result", [])

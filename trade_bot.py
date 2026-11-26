@@ -39,6 +39,8 @@ class TradeBot:
         self.finalised_order_ids = []
         self.live_prices = {}
 
+        self.roundtrip_last_check = {}
+
         self.live_order_queue = queue.Queue(maxsize=1)
         self.incoming_trade_queue = queue.Queue(maxsize=1)
         self.bot_shutdown = threading.Event()
@@ -46,9 +48,15 @@ class TradeBot:
     def check_roundtrip(self, symbol, open_time, stop_loss, break_even_price,
                         entry_price, side):
 
+        if time.time() - self.roundtrip_last_check.get(symbol, 0) < 10:
+            return False
+
         end_time = get_current_time(self.session)
         data = get_past_low_high_prices(self.session, symbol,
                                         TradeBot.INTERVAL, open_time, end_time)
+        print(f"Checking roundtrip for {symbol} ")
+
+        self.roundtrip_last_check[symbol] = time.time()
 
         if data is None:
             return False
@@ -281,7 +289,6 @@ class TradeBot:
                                 position["stop_loss"],
                                 position["break_even_price"],
                                 position["entry_price"], position["side"])
-                            time.sleep(0.5)
                             continue
 
                 case State.REVERSING:
