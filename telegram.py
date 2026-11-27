@@ -38,6 +38,12 @@ def send(message, chat_id=None):
 def handle_message(bybit_session, message, chat_id):
     command = message.strip().split()[0].lower().split("@")[0]
 
+    if command.startswith("/") and chat_id in pending_close:
+        symbol = command[1:].upper()
+
+        if symbol not in pending_close[chat_id]:
+            pending_close.pop(chat_id, None)
+
     if command == "/summary":
         summary = get_live_summary(bybit_session)
         send(f"Your account summary:\n\n{summary}", chat_id)
@@ -62,8 +68,13 @@ def handle_message(bybit_session, message, chat_id):
 
     elif command.startswith("/") and chat_id in pending_close:
         symbol = command[1:].upper()
-        close_live_position(bybit_session, symbol)
-        pending_close[chat_id].discard(symbol)
+
+        if symbol in pending_close[chat_id]:
+            close_live_position(bybit_session, symbol)
+            pending_close[chat_id].discard(symbol)
+
+        if not pending_close[chat_id]:
+            pending_close.pop(chat_id, None)
 
     elif command == "/help":
         help_message = ("Available commands:\n\n"
@@ -90,6 +101,10 @@ def register_commands():
         {
             "command": "close",
             "description": "Manually close a position"
+        },
+        {
+            "command": "help",
+            "description": "Show available commands"
         },
     ]
 

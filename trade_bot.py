@@ -179,24 +179,26 @@ class TradeBot:
             return
 
         self.incoming_trade_queue.join()
-
         self.trade = trade
-        self.incoming_trade_queue.put(self.trade)
-
         position_exists = False
 
         if not self.current_positions:
+            self.incoming_trade_queue.put(self.trade)
             self.open_position = True
             return
 
         for position in self.current_positions:
             if position["symbol"] == trade["symbol"]:
+
                 position_exists = True
+
                 if position["side"] != trade["side"]:
+                    self.incoming_trade_queue.put(self.trade)
                     self.reverse_position = True
                     break
 
         if not position_exists:
+            self.incoming_trade_queue.put(self.trade)
             self.open_position = True
 
     def initialise_manager(self):
@@ -310,7 +312,7 @@ class TradeBot:
                                                    leverage,
                                                    position_idx=0),
                                      "REVERSAL"))
-                                print(f"Reversed position successfully!\n"
+                                print(f"\nProcessing a reverse position!\n"
                                       f"Symbol: {self.trade['symbol']}\n"
                                       f"Side: {self.trade['side']}\n"
                                       f"Leverage: {leverage}\n"
@@ -333,7 +335,7 @@ class TradeBot:
                                            stop_loss,
                                            leverage,
                                            position_idx=0), "OPEN"))
-                        print(f"Opened position successfully!\n"
+                        print(f"\nProcessing an open position!\n"
                               f"Symbol: {self.trade['symbol']}\n"
                               f"Side: {self.trade['side']}\n"
                               f"Leverage: {leverage}\n"
@@ -354,7 +356,7 @@ class TradeBot:
                                                 position_idx=0),
                                  "ROUNDTRIP CLOSE"))
                             position["roundtripped"] = False
-                            print(f"Closed position successfully!\n"
+                            print(f"\nProcessing a close position!\n"
                                   f"Symbol: {position['symbol']}\n"
                                   f"Side: {position['side']}\n"
                                   f"Coins: {position['size']}\n")

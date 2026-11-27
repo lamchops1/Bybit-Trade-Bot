@@ -286,8 +286,9 @@ def open_position(session,
         qty = (qty / step).to_integral_value(rounding=ROUND_DOWN) * step
 
         if qty < min_qty:
-            raise ValueError(f"Calculated quantity ({qty}) is below "
-                             f"Bybit minimum ({min_qty}). Skipping trade.")
+            print(f"Calculated quantity ({qty}) is below "
+                  f"Bybit minimum ({min_qty}). Skipping trade.")
+            return "no-trade-dummy-order-id"
 
         response = session.place_order(
             category="linear",
@@ -399,7 +400,7 @@ def get_execution_overview(session, order_id, order_status, balance, positions,
                     break
 
             entry_price = float(closed_order["avgEntryPrice"])
-            close_price = float(closed_order["avgExitPrice"])
+            exit_price = float(closed_order["avgExitPrice"])
             side = closed_order["side"]
             leverage = float(closed_order["leverage"])
             pnl = float(closed_order["closedPnl"])
@@ -419,7 +420,7 @@ def get_execution_overview(session, order_id, order_status, balance, positions,
                     f"Side: {side}\n"
                     f"Leverage: {leverage}x\n"
                     f"Entry Price: {entry_price} USDT\n"
-                    f"Close Price: {close_price} USDT\n"
+                    f"Exit Price: {exit_price} USDT\n"
                     f"Quantity: {quantity} {currency}\n"
                     f"Time: {time} VIC Time\n"
                     f"===========================\n"
@@ -551,19 +552,19 @@ def get_live_summary(session):
                 funds = round((qty * buy_price) / (0.9174312 * leverage), 3)
 
                 summary.append(f"Coin: {symbol}\n"
-                               f"Money spent: ${funds} USD\n"
+                               f"Money Spent: ${funds} USD\n"
                                f"Entry Price: ${buy_price} USD\n"
                                f"Live Price: ${current_price} USD\n"
-                               f"Live profit: ${live_profit} USD\n"
+                               f"Live Profit: ${live_profit} USD\n"
                                f"Live RTR: {live_rtr}x\n\n")
             else:
                 funds = round((qty * buy_price) / (1.0 * leverage), 3)
 
                 summary.append(f"Coin: {symbol}\n"
-                               f"Money spent: ${funds} USD\n"
+                               f"Money Spent: ${funds} USD\n"
                                f"Entry Price: ${buy_price} USD\n"
                                f"Live Price: ${current_price} USD\n"
-                               f"Live profit: ${live_profit} USD\n"
+                               f"Live Profit: ${live_profit} USD\n"
                                f"Live RTR: {live_rtr}x\n\n")
 
         return "".join(summary)
