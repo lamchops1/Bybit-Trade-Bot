@@ -115,6 +115,8 @@ class TradeBot:
             print("Account is eligible to open a new position")
             return True, balance
         else:
+            self.incoming_trade_queue.get()
+            self.incoming_trade_queue.task_done()
             print("Account is not eligible to open a new position!")
             return False, None
 
