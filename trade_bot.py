@@ -158,7 +158,7 @@ class TradeBot:
 
         symbols = [
             "BTCUSDT", "ETHUSDT", "DOGEUSDT", "XRPUSDT", "SOLUSDT", "ADAUSDT",
-            "LINKUSDT"
+            "LINKUSDT", "XMRUSDT"
         ]
 
         while not self.bot_shutdown.is_set():

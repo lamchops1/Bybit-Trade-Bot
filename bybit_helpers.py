@@ -553,8 +553,6 @@ def get_live_summary(session):
 
                 summary.append(f"Coin: {symbol}\n"
                                f"Money Spent: ${funds} USD\n"
-                               f"Entry Price: ${buy_price} USD\n"
-                               f"Live Price: ${current_price} USD\n"
                                f"Live Profit: ${live_profit} USD\n"
                                f"Live RTR: {live_rtr}x\n\n")
             else:
@@ -562,8 +560,6 @@ def get_live_summary(session):
 
                 summary.append(f"Coin: {symbol}\n"
                                f"Money Spent: ${funds} USD\n"
-                               f"Entry Price: ${buy_price} USD\n"
-                               f"Live Price: ${current_price} USD\n"
                                f"Live Profit: ${live_profit} USD\n"
                                f"Live RTR: {live_rtr}x\n\n")
 
@@ -589,16 +585,27 @@ def get_live_positions(session):
 
         for position in positions:
             symbol = position["symbol"]
+
+            response = session.get_tickers(category="linear", symbol=symbol)
+            if response["retCode"] != 0:
+                raise RuntimeError(response)
+
+            ticker = response["result"]["list"][0]
+            current_price = float(ticker["lastPrice"])
+
             side = position["side"]
             leverage = float(position["leverage"])
             stop_loss = float(position["stopLoss"])
             qty = float(position["size"])
+            buy_price = float(position["avgPrice"])
             liquidation_price = float(position["liqPrice"])
 
             live_positions.append(
                 f"Symbol: {symbol}\n"
                 f"Side: {side}\n"
                 f"Leverage: {leverage}x\n"
+                f"Entry Price: ${buy_price} USD\n"
+                f"Live Price: ${current_price} USD\n"
                 f"Stop Loss: ${stop_loss} USD\n"
                 f"Liquidation Price: ${liquidation_price} USD\n"
                 f"Quantity: {qty}\n\n")
