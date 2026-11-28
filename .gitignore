@@ -1,8 +1,6 @@
 .env
-
 pinescript.txt
-
 __pycache__/
 */pyc
-
 .vscode/
+keys/

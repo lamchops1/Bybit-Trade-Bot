@@ -529,7 +529,7 @@ def get_live_summary(session):
 
         positions = response["result"]["list"]
 
-        summary = [f"🤑Current Account Balance: ${account_balance} USD🤑 \n\n"]
+        summary = [f"🤑Live Account Balance: ${account_balance} USD🤑 \n\n"]
 
         for position in positions:
 

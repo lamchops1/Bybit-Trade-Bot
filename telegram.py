@@ -70,9 +70,9 @@ def handle_message(bybit_session, message, chat_id):
         online_check = []
         for thread in ["Server", "Price Tracker", "Position Manager", "Bot"]:
             if thread not in reporter or time.time() - reporter[thread] > 20:
-                online_check.append(f"{thread} is OFFLINE!\n")
+                online_check.append(f"{thread} is OFFLINE! ❌\n")
             else:
-                online_check.append(f"{thread} is ONLINE\n")
+                online_check.append(f"{thread} is ONLINE ✔️\n")
         send("".join(online_check), chat_id)
 
     elif command.startswith("/") and chat_id in pending_close:
@@ -89,7 +89,8 @@ def handle_message(bybit_session, message, chat_id):
         help_message = ("Available commands:\n\n"
                         "/summary - Get a live account summary\n"
                         "/positions - Get details of your open positions\n"
-                        "/close - Manually close a position")
+                        "/close - Manually close a position\n"
+                        "/online - Check if your bot is online")
 
         send(help_message, chat_id)
 
