@@ -4,6 +4,12 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from decimal import Decimal, ROUND_DOWN
 
+reporter = {}
+
+
+def report_online(thread):
+    reporter[thread] = time.time()
+
 
 def get_balance(session):
     try:

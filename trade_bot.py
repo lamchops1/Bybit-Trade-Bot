@@ -174,6 +174,8 @@ class TradeBot:
                 }
                 time.sleep(0.1)
 
+            report_online("Price Tracker")
+
     def receiver(self, trade):
 
         if self.bot_shutdown.is_set():
@@ -243,6 +245,7 @@ class TradeBot:
                             (opened_orders_ids, order_status))
                         self.update_position = True
 
+            report_online("Position Manager")
             time.sleep(0.1)
 
     def run(self):
@@ -260,6 +263,8 @@ class TradeBot:
 
             if self.bot_shutdown.is_set():
                 return
+
+            report_online("Bot")
 
             match self.bot:
 

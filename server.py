@@ -1,9 +1,9 @@
 import os
 import threading
 import requests
-import time
 import subprocess
 
+from bybit_helpers import report_online
 from queue import Queue
 from flask import Flask, request, jsonify
 from werkzeug.serving import make_server
@@ -191,8 +191,9 @@ def heartbeat_check(ngrok_process):
         heartbeat_ready.set()
 
         if is_online:
-            print("Server online.\n")
+            report_online("Server")
             reconnect_attempt = 0
+            print("Server online.\n")
         else:
             print("Server connection unavailable. Retrying...\n")
             reconnect_attempt += 1
@@ -214,38 +215,4 @@ def stop_heartbeat():
         print("Heartbeat successfully shutdown.")
 
 
-# $body = @{
-#     secret = "kXq57B4fN7kpYYNcfwMaqEEaBUSX6HteeCXpxbOL5QM"
-#     action = "Buy"
-#     signal = "TREND_UP"
-#     symbol = "ETHUSDT"
-#     timeframe = "15"
-#     trendline = 1663.61
-#     support = 1664.79
-#     resistance =1713.33
-#     bar_time = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
-# } | ConvertTo-Json
-
-# Invoke-RestMethod `
-#     -Uri "https://constrict-aide-stem.ngrok-free.dev/webhook" `
-#     -Method POST `
-#     -ContentType "application/json" `
-#     -Body $body
-
-# $body = @{
-#     secret = "kXq57B4fN7kpYYNcfwMaqEEaBUSX6HteeCXpxbOL5QM"
-#     action = "Sell"
-#     signal = "TREND_DOWN"
-#     symbol = "ETHUSDT"
-#     timeframe = "15"
-#     trendline = 1728.00
-#     support = 1664.79
-#     resistance =1713.54
-#     bar_time = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
-# } | ConvertTo-Json
-
-# Invoke-RestMethod `
-#     -Uri "https://constrict-aide-stem.ngrok-free.dev/webhook" `
-#     -Method POST `
-#     -ContentType "application/json" `
-#     -Body $body
+# ssh -i 'C:\Users\David\Documents\Home Engineering Projects\Bybit Trade Bot\keys\ssh-key-2026-11-28.key' ubuntu@161.33.74.215

@@ -66,6 +66,15 @@ def handle_message(bybit_session, message, chat_id):
 
         send(close_message, chat_id)
 
+    elif command == "/online":
+        online_check = []
+        for thread in ["Server", "Price Tracker", "Position Manager", "Bot"]:
+            if thread not in reporter or time.time() - reporter[thread] > 20:
+                online_check.append(f"{thread} is OFFLINE!\n")
+            else:
+                online_check.append(f"{thread} is ONLINE\n")
+        send("".join(online_check), chat_id)
+
     elif command.startswith("/") and chat_id in pending_close:
         symbol = command[1:].upper()
 
@@ -101,6 +110,10 @@ def register_commands():
         {
             "command": "close",
             "description": "Manually close a position"
+        },
+        {
+            "command": "online",
+            "description": "Check if tradebot is online"
         },
         {
             "command": "help",
