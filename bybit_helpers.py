@@ -365,7 +365,7 @@ def get_execution_overview(session, order_id, order_status, balance, positions,
                            max_positions):
 
     open_positions = len(positions)
-    total_balance = float(balance["equity"])
+    total_balance = round(float(balance["equity"]), 3)
 
     try:
 
@@ -409,24 +409,24 @@ def get_execution_overview(session, order_id, order_status, balance, positions,
                 int(int(closed_order["updatedTime"])) / 1000,
                 tz=ZoneInfo("Australia/Melbourne"))
 
-            result = ("PROFIT"
-                      if pnl > 0 else "LOSS" if pnl < 0 else "BREAK EVEN")
+            result = ("💸💸 PROFIT" if pnl > 0 else
+                      "⛔⛔ LOSS" if pnl < 0 else "⚖️⚖️ BREAK EVEN")
 
             return (f"{result}: ${pnl} USD\n"
                     f"=============================\n"
-                    f"Position: {order_status}\n"
-                    f"Order ID: {order_id}\n"
-                    f"Coin: {symbol}\n"
-                    f"Side: {side}\n"
-                    f"Leverage: {leverage}x\n"
-                    f"Entry Price: {entry_price} USDT\n"
-                    f"Exit Price: {exit_price} USDT\n"
-                    f"Quantity: {quantity} {currency}\n"
-                    f"Time: {time} VIC Time\n"
+                    f"🔒 Position: {order_status}\n"
+                    f"🆔 Order ID: {order_id}\n"
+                    f"💰 Coin: {symbol}\n"
+                    f"🏷️ Side: {side}\n"
+                    f"⚡ Leverage: {leverage}x\n"
+                    f"🏁 Entry Price: {entry_price} USDT\n"
+                    f"🏆 Exit Price: {exit_price} USDT\n"
+                    f"⚖ Quantity: {quantity} {currency}\n"
+                    f"🕒 Time: {time} VIC Time\n"
                     f"===========================\n"
-                    f"Total Balance: ${total_balance} USD\n"
+                    f"🤑 Total Balance: ${total_balance} USD 🤑\n"
                     f"===========================\n"
-                    f"Current Open Positions: {open_positions}\n")
+                    f"👉 Current Open Positions: {open_positions}\n")
 
         else:
 
@@ -479,23 +479,23 @@ def get_execution_overview(session, order_id, order_status, balance, positions,
                                           1000,
                                           tz=ZoneInfo("Australia/Melbourne"))
 
-            return (f"Position: {order_status}\n"
-                    f"Order ID: {order_id}\n"
-                    f"Coin: {symbol}\n"
-                    f"Side: {side}\n"
-                    f"Leverage: {leverage}x\n"
-                    f"Money Spent: ${funds} USD\n"
-                    f"Entry Price: {entry_price} USDT\n"
-                    f"Stop Loss Price: {stop_loss} USDT\n"
-                    f"Liquidation Price: {liquidation_price} USDT\n"
-                    f"Quantity: {quantity} {currency}\n"
-                    f"Time: {time} VIC Time\n"
-                    f"1.0 RTR Profit: ${one_rtr_profit} USD\n"
-                    f"Stop Loss: ${stop_loss_loss} USD\n"
+            return (f"🔒 Position: {order_status}\n"
+                    f"🆔 Order ID: {order_id}\n"
+                    f"💰 Coin: {symbol}\n"
+                    f"🏷️ Side: {side}\n"
+                    f"⚡ Leverage: {leverage}x\n"
+                    f"💳 Money Spent: ${funds} USD\n"
+                    f"🏁 Entry Price: {entry_price} USDT\n"
+                    f"🛑 Stop Loss Price: {stop_loss} USDT\n"
+                    f"☠️ Liquidation Price: {liquidation_price} USDT\n"
+                    f"⚖ Quantity: {quantity} {currency}\n"
+                    f"🕒 Time: {time} VIC Time\n"
+                    f"1️ 1.0 RTR Profit: ${one_rtr_profit} USD\n"
+                    f"🚫 Stop Loss: ${stop_loss_loss} USD\n"
                     f"===========================\n"
-                    f"Total Balance: ${total_balance} USD\n"
+                    f"🤑 Total Balance: ${total_balance} USD 🤑\n"
                     f"===========================\n"
-                    f"Current Open Positions: {open_positions}\n")
+                    f"👉 Current Open Positions: {open_positions}\n")
 
     except Exception as e:
         raise RuntimeError(f"Failed to obtain position summary : {e}") from e
@@ -514,7 +514,7 @@ def get_live_summary(session):
         account = response["result"]["list"][0]
         for coin in account["coin"]:
             if coin["coin"] == "USDT":
-                account_balance = coin["equity"]
+                account_balance = round(float(coin["equity"]), 3)
                 break
 
         response = session.get_positions(category="linear", settleCoin="USDT")
@@ -523,7 +523,7 @@ def get_live_summary(session):
 
         positions = response["result"]["list"]
 
-        summary = [f"Current Account Balance: ${account_balance} USD\n\n"]
+        summary = [f"🤑Current Account Balance: ${account_balance} USD🤑 \n\n"]
 
         for position in positions:
 
@@ -551,17 +551,17 @@ def get_live_summary(session):
             if side == "Buy":
                 funds = round((qty * buy_price) / (0.9174312 * leverage), 3)
 
-                summary.append(f"Coin: {symbol}\n"
-                               f"Money Spent: ${funds} USD\n"
-                               f"Live Profit: ${live_profit} USD\n"
-                               f"Live RTR: {live_rtr}x\n\n")
+                summary.append(f"💰 Coin: {symbol}\n"
+                               f"💳 Money Spent: ${funds} USD\n"
+                               f"📈 Live Profit: ${live_profit} USD\n"
+                               f"🚀 Live RTR: {live_rtr}x\n\n")
             else:
                 funds = round((qty * buy_price) / (1.0 * leverage), 3)
 
-                summary.append(f"Coin: {symbol}\n"
-                               f"Money Spent: ${funds} USD\n"
-                               f"Live Profit: ${live_profit} USD\n"
-                               f"Live RTR: {live_rtr}x\n\n")
+                summary.append(f"💰 Coin: {symbol}\n"
+                               f"💳 Money Spent: ${funds} USD\n"
+                               f"📈 Live Profit: ${live_profit} USD\n"
+                               f"🚀 Live RTR: {live_rtr}x\n\n")
 
         return "".join(summary)
 
@@ -601,14 +601,14 @@ def get_live_positions(session):
             liquidation_price = float(position["liqPrice"])
 
             live_positions.append(
-                f"Symbol: {symbol}\n"
-                f"Side: {side}\n"
-                f"Leverage: {leverage}x\n"
-                f"Entry Price: ${buy_price} USD\n"
-                f"Live Price: ${current_price} USD\n"
-                f"Stop Loss: ${stop_loss} USD\n"
-                f"Liquidation Price: ${liquidation_price} USD\n"
-                f"Quantity: {qty}\n\n")
+                f"💰 Symbol: {symbol}\n"
+                f"🏷️ Side: {side}\n"
+                f"⚡ Leverage: {leverage}x\n"
+                f"🏁 Entry Price: ${buy_price} USD\n"
+                f"💲 Live Price: ${current_price} USD\n"
+                f"🛑 Stop Loss: ${stop_loss} USD\n"
+                f"☠️ Liquidation Price: ${liquidation_price} USD\n"
+                f"⚖ Quantity: {qty}\n\n")
 
         return "".join(live_positions)
 

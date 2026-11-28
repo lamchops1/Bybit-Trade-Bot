@@ -30,7 +30,6 @@ class TradeBot:
         self.session = session
         self.balance = get_balance(self.session)
         self.current_positions = get_positions(self.session)
-        #self.analyse_position()
 
         self.open_position = False
         self.update_position = False
